@@ -6,20 +6,30 @@ import { Category, AppConfig } from '../../types';
 import { CategoryFormModal } from './CategoryFormModal';
 import { QuickQuestionFormModal } from './QuickQuestionFormModal';
 
-const AdminPanel: React.FC = () => {
+const AdminPanel = () => {
+  // Destructure all required state and actions from the store
   const {
     config,
-    setConfig,
+    updateAndSaveConfig,
+    logout,
     setError,
     categories,
     addCategory,
     updateCategory,
     deleteCategory,
-    logout,
-  } = useAppStore(state => state);
+  } = useAppStore(state => ({
+    config: state.config,
+    updateAndSaveConfig: state.updateAndSaveConfig,
+    logout: state.logout,
+    setError: state.setError,
+    categories: state.categories,
+    addCategory: state.addCategory,
+    updateCategory: state.updateCategory,
+    deleteCategory: state.deleteCategory,
+  }));
   
   const [activeTab, setActiveTab] = useState('general');
-  const [formData, setFormData] = useState(config);
+  const [formData, setFormData] = useState<AppConfig>(config);
   const [isLoading, setIsLoading] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingQuestion, setEditingQuestion] = useState<{ id: string; text: string } | null>(null);
@@ -37,9 +47,10 @@ const AdminPanel: React.FC = () => {
     { id: 'content', label: 'Contenido', icon: Edit }
   ];
 
-  const handleSave = () => {
-    setConfig(formData);
-    alert('Configuración guardada exitosamente');
+  const handleSave = async () => {
+    // Use formData which holds the local state of the form
+    await updateAndSaveConfig(formData); 
+    alert('¡Configuración guardada con éxito!');
   };
 
   const handleTestConnection = async () => {

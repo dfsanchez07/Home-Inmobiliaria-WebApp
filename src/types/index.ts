@@ -1,5 +1,3 @@
-// ... (código anterior se mantiene igual)
-
 export interface SocialLink {
   id: string;
   name: string;
@@ -35,33 +33,6 @@ export interface AppConfig {
   socialLinks: SocialLink[];
 }
 
-export interface AppConfig {
-  webhookUrl: string;
-  nocodbApiKey: string;
-  nocodbUrl: string;
-  nocodbDatabase: string;
-  nocodbTable: string;
-  logo: string;
-  title: string;
-  headerTitle: string;
-  primaryColor: string;
-  secondaryColor: string;
-  headerBgColor: string;
-  footerBgColor: string;
-  footerTextColor: string;
-  menuItemColor: string;
-  menuItemHoverColor: string;
-  initialChatMessage: string;
-  footerCompanyName: string;
-  footerDescription: string;
-  footerLinks?: { name: string; url: string }[];
-  adminUsername: string;
-  adminPassword: string;
-  quickQuestions: { id: string; text: string }[];
-  visibleDetails: string[];
-  chatDisplayMode: 'widget' | 'embedded';
-}
-
 export interface Property {
   id?: string;
   title: string;
@@ -91,11 +62,14 @@ export interface ChatMessage {
   content: string;
   timestamp: Date;
   properties?: Property[];
+  isTyping?: boolean;
 }
 
 export interface ChatResponse {
-  text?: string;
-  properties?: Property[];
+  output: {
+    text?: string;
+    properties?: Property[];
+  }
 }
 
 export interface NocoDBProperty {
@@ -109,8 +83,9 @@ export interface NocoDBProperty {
   'Precio de Alquiler'?: number;
   'Foto Destacada'?: {
     url: string;
-    thumbnails: {
-      card_cover: {
+    signedUrl: string;
+    thumbnails?: {
+      card_cover?: {
         url: string;
         signedUrl: string;
       }

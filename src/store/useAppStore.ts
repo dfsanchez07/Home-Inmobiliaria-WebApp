@@ -18,7 +18,8 @@ interface AppStore {
   isChatOpen: boolean;
   
   // Actions
-  setConfig: (config: Partial<AppConfig>) => void;
+  fetchAndSetConfig: () => Promise<void>;
+  updateAndSaveConfig: (config: Partial<AppConfig>) => Promise<void>;
   setCategories: (categories: Category[]) => void;
   setCategoryProperties: (categoryId: string, properties: Property[]) => void;
   addChatMessage: (message: ChatMessage) => void;
@@ -97,6 +98,39 @@ export const useAppStore = create<AppStore>()(
       imageModalUrl: null,
       isChatOpen: false,
 
+      fetchAndSetConfig: async () => {
+        set({ isLoading: true });
+        try {
+          // The ApiService now uses environment variables for this call.
+          const fetchedConfig = await ApiService.fetchConfig();
+          set({ config: { ...defaultConfig, ...fetchedConfig }, isLoading: false });
+        } catch (error) {
+          console.error("Failed to fetch config:", error);
+          // Fallback to default config if .env is not set or fetch fails
+          set({ 
+            error: 'No se pudo cargar la configuración del servidor. Usando configuración por defecto.', 
+            isLoading: false,
+            config: defaultConfig 
+          });
+        }
+      },
+
+      updateAndSaveConfig: async (newConfig) => {
+        const originalConfig = get().config;
+        const updatedConfig = { ...originalConfig, ...newConfig };
+        
+        set({ isLoading: true, config: updatedConfig });
+
+        try {
+          // The ApiService now uses environment variables for this call.
+          await ApiService.updateConfig(updatedConfig);
+          set({ isLoading: false });
+        } catch (error) {
+          console.error("Failed to save config:", error);
+          set({ error: 'No se pudo guardar la configuración.', isLoading: false, config: originalConfig }); // Revert on error
+        }
+      },
+
       login: (username, password) => {
         const { config } = get();
         const expectedUsername = config.adminUsername || 'admin';
@@ -112,11 +146,6 @@ export const useAppStore = create<AppStore>()(
       logout: () => {
         set({ isAuthenticated: false });
       },
-
-      setConfig: (newConfig) =>
-        set((state) => ({
-          config: { ...state.config, ...newConfig }
-        })),
 
       setCategories: (categories) => set({ categories }),
 
@@ -268,7 +297,6 @@ export const useAppStore = create<AppStore>()(
     {
       name: 'real-estate-app-storage',
       partialize: (state) => ({ 
-        config: state.config,
         isAuthenticated: state.isAuthenticated,
         categories: state.categories,
       }),
@@ -276,10 +304,6 @@ export const useAppStore = create<AppStore>()(
         const state = { ...currentState };
         const pState = persistedState as any;
         if (pState) {
-          state.config = {
-            ...defaultConfig,
-            ...(pState.config || {}),
-          };
           state.isAuthenticated = pState.isAuthenticated || false;
           state.categories = pState.categories || [];
         }

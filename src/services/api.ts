@@ -1,7 +1,113 @@
 import axios from 'axios';
-import { ChatResponse, NocoDBProperty, Property } from '../types';
+import { AppConfig, ChatResponse, NocoDBProperty, Property } from '../types';
+
+// --- Conexión para la tabla de Configuración ---
+// Estas credenciales son para la tabla AppConfig y se leen desde el archivo .env
+const CONFIG_NOCODB_URL = import.meta.env.VITE_APP_CONFIG_NOCODB_URL;
+const CONFIG_NOCODB_API_KEY = import.meta.env.VITE_APP_CONFIG_NOCODB_API_KEY;
+const CONFIG_TABLE_NAME = import.meta.env.VITE_APP_CONFIG_NOCODB_ID_TABLE;
+const CONFIG_RECORD_ID = 'main';
 
 export class ApiService {
+  /**
+   * Fetches the main application configuration from the AppConfig table.
+   * Uses dedicated credentials from environment variables.
+   * Now handles both object and stringified JSON responses from NocoDB.
+   */
+  static async fetchConfig(): Promise<AppConfig> {
+    try {
+      if (!CONFIG_NOCODB_URL || !CONFIG_NOCODB_API_KEY) {
+        throw new Error('Las credenciales para la configuración (VITE_APP_CONFIG_...) no están definidas en el archivo .env.');
+      }
+      const url = `${CONFIG_NOCODB_URL}/api/v2/tables/${CONFIG_TABLE_NAME}/records`;
+      const response = await axios.get(url, {
+        headers: { 'xc-token': CONFIG_NOCODB_API_KEY },
+        params: {
+          where: `(key,eq,${CONFIG_RECORD_ID})`
+        }
+      });
+      if (response.data.list && response.data.list.length > 0) {
+        const value = response.data.list[0].value;
+        // Handle case where value is a stringified JSON or a direct object
+        if (typeof value === 'string') {
+          try {
+            return JSON.parse(value);
+          } catch (e) {
+            console.error("Failed to parse config JSON from string:", e);
+            throw new Error("La configuración almacenada parece tener un formato JSON inválido.");
+          }
+        }
+        return value;
+      }
+      throw new Error('Configuration not found in NocoDB');
+    } catch (error) {
+      console.error('NocoDB Config API Error:', error);
+      throw new Error('Error al cargar la configuración');
+    }
+  }
+
+  /**
+   * Updates the main application configuration in the AppConfig table.
+   * Uses dedicated credentials from environment variables.
+   * Now stringifies the config to ensure it's saved correctly.
+   * Also creates the config record if it doesn't exist.
+   * @param config The full configuration object to save.
+   */
+  static async updateConfig(config: AppConfig): Promise<void> {
+    try {
+      if (!CONFIG_NOCODB_URL || !CONFIG_NOCODB_API_KEY) {
+        throw new Error('Las credenciales para la configuración (VITE_APP_CONFIG_...) no están definidas en el archivo .env.');
+      }
+      
+      const findUrl = `${CONFIG_NOCODB_URL}/api/v2/tables/${CONFIG_TABLE_NAME}/records`;
+      const findResponse = await axios.get(findUrl, {
+        headers: { 'xc-token': CONFIG_NOCODB_API_KEY },
+        params: { where: `(key,eq,${CONFIG_RECORD_ID})` }
+      });
+
+      const configAsString = JSON.stringify(config);
+
+      // If record doesn't exist, create it.
+      if (!findResponse.data.list || findResponse.data.list.length === 0) {
+        console.log("Configuration record not found. Creating a new one...");
+        const createUrl = `${CONFIG_NOCODB_URL}/api/v2/tables/${CONFIG_TABLE_NAME}/records`;
+        await axios.post(createUrl, {
+          key: CONFIG_RECORD_ID,
+          value: configAsString
+        }, {
+          headers: { 'xc-token': CONFIG_NOCODB_API_KEY }
+        });
+        return;
+      }
+      
+      // If record exists, update it using PATCH on the bulk endpoint.
+      const recordToUpdate = findResponse.data.list[0];
+      const recordId = recordToUpdate.Id;
+      const updateUrl = `${CONFIG_NOCODB_URL}/api/v2/tables/${CONFIG_TABLE_NAME}/records`;
+
+      const payload = {
+        Id: recordId,
+        value: configAsString
+      };
+
+      // --- DEBUGGING LOGS ---
+      console.log("--- NocoDB Update Debug ---");
+      console.log("Record ID to update:", recordId);
+      console.log("Request URL (PATCH):", updateUrl);
+      console.log("Request Payload (Array):", [payload]);
+      console.log("---------------------------");
+
+      // Using PATCH with the bulk endpoint, as per NocoDB docs and user feedback.
+      await axios.patch(updateUrl, [payload], { // Note: Payload is wrapped in an array for bulk PATCH
+        headers: { 'xc-token': CONFIG_NOCODB_API_KEY }
+      });
+
+    } catch (error) {
+      console.error('NocoDB Update Config API Error:', error);
+      throw new Error('Error al actualizar la configuración');
+    }
+  }
+
   static async sendChatMessage(
     webhookUrl: string, 
     message: string,
@@ -21,6 +127,10 @@ export class ApiService {
     }
   }
 
+  /**
+   * Fetches properties from the properties table.
+   * Uses dynamic credentials provided from the application config.
+   */
   static async fetchProperties(
     nocodbUrl: string,
     apiKey: string,

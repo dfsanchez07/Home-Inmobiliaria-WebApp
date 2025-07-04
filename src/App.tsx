@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAppStore } from './store/useAppStore';
 import { HomePage } from './pages/HomePage';
@@ -12,6 +12,12 @@ const PrivateRoute: React.FC<{ children: React.ReactElement }> = ({ children }) 
 
 function App() {
   const config = useAppStore(state => state.config);
+  const fetchAndSetConfig = useAppStore(state => state.fetchAndSetConfig);
+
+  useEffect(() => {
+    // Fetch the configuration from the server when the app loads
+    fetchAndSetConfig();
+  }, [fetchAndSetConfig]);
 
   // Inject styles from config
   const dynamicStyles = `
