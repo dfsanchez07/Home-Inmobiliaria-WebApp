@@ -1,22 +1,31 @@
-# Etapa 1: construir la app
-FROM node:20 AS builder
+FROM node:20-alpine AS build
 
+# Set working directory
 WORKDIR /app
 
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy project files
 COPY . .
 
-RUN npm install
+# Build the application
 RUN npm run build
 
-# Etapa 2: usar un servidor estático (http-server)
-FROM node:20-slim
+# Production stage
+FROM nginx:alpine
 
-WORKDIR /app
+# Copy build files to nginx
+COPY --from=build /app/dist /usr/share/nginx/html
 
-RUN npm install -g http-server
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=builder /app/dist .
+# Expose port
+EXPOSE 80
 
-EXPOSE 4173
-
-CMD ["http-server", "-p", "4173"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
