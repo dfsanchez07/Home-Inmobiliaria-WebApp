@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  HomeInmobiliaria:
+    build: .
+    container_name: home-inmobiliaria
+    ports:
+      - "4173:4173"
+    networks:
+      - frontend
+    restart: unless-stopped
+
+networks:
+  frontend:
+    external: true
