@@ -4,8 +4,8 @@ services:
   homeinmobiliaria:
     build: .
     container_name: home-inmobiliaria
-    ports:
-      - "80:80"
+    expose:
+      - "80"
     networks:
       - frontend
     restart: unless-stopped
