@@ -94,7 +94,7 @@ export const LoginForm: React.FC = () => {
           >
             Iniciar Sesión
           </button>
-
+        {/*
           <div className="text-center text-sm text-gray-500 mt-6">
             <p>Credenciales actuales:</p>
             <div className="bg-gray-100 rounded-lg p-3 mt-2 space-y-1">
@@ -106,6 +106,7 @@ export const LoginForm: React.FC = () => {
               </p>
             </div>
           </div>
+        */}
         </form>
       </div>
     </div>
