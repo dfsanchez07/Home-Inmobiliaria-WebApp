@@ -2,7 +2,14 @@ version: '3.8'
 
 services:
   homeinmobiliaria:
-    build: .
+    build:
+      context: .
+      args:
+        # Pass variables from the .env file to the Docker build arguments
+        VITE_APP_CONFIG_NOCODB_URL: ${VITE_APP_CONFIG_NOCODB_URL}
+        VITE_APP_CONFIG_NOCODB_API_KEY: ${VITE_APP_CONFIG_NOCODB_API_KEY}
+        VITE_APP_CONFIG_NOCODB_DATABASE: ${VITE_APP_CONFIG_NOCODB_DATABASE}
+        VITE_APP_CONFIG_NOCODB_ID_TABLE: ${VITE_APP_CONFIG_NOCODB_ID_TABLE}
     container_name: home-inmobiliaria
     expose:
       - "80"
