@@ -80,13 +80,20 @@ export class ApiService {
         return;
       }
       
-      // If record exists, update it using PATCH on the bulk endpoint.
+      // If record exists, update it.
       const recordToUpdate = findResponse.data.list[0];
-      const recordId = recordToUpdate.Id;
+      // FIX: Make the primary key detection robust (handles 'Id' and 'id')
+      const recordId = recordToUpdate.Id || recordToUpdate.id;
+      const pkColumnName = 'Id' in recordToUpdate ? 'Id' : 'id';
+
+      if (!recordId) {
+        throw new Error("El registro de configuración existe pero no tiene una clave primaria ('Id' o 'id').");
+      }
+
       const updateUrl = `${CONFIG_NOCODB_URL}/api/v2/tables/${CONFIG_TABLE_NAME}/records`;
 
       const payload = {
-        Id: recordId,
+        [pkColumnName]: recordId,
         value: configAsString
       };
 
@@ -94,11 +101,11 @@ export class ApiService {
       console.log("--- NocoDB Update Debug ---");
       console.log("Record ID to update:", recordId);
       console.log("Request URL (PATCH):", updateUrl);
-      console.log("Request Payload (Array):", [payload]);
+      console.log("Request Payload:", payload);
       console.log("---------------------------");
 
-      // Using PATCH with the bulk endpoint, as per NocoDB docs and user feedback.
-      await axios.patch(updateUrl, [payload], { // Note: Payload is wrapped in an array for bulk PATCH
+      // FIX: Use single object for PATCH, which is more standard than a bulk array for a single update.
+      await axios.patch(updateUrl, payload, {
         headers: { 'xc-token': CONFIG_NOCODB_API_KEY }
       });
 
