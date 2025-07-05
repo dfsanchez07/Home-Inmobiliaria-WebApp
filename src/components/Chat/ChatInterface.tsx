@@ -57,7 +57,7 @@ export const ChatInterface: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-gray-50 border rounded-xl overflow-hidden">
-      <div className="p-4 border-b bg-white flex-shrink-0">
+      <div className="py-2 px-4 border-b bg-white flex-shrink-0">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center">
           <MessageSquare className="mr-2" style={{ color: config.primaryColor }} />
           Asistente Virtual
@@ -94,7 +94,7 @@ export const ChatInterface: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
       </div>
-      <div className="p-4 bg-white border-t flex-shrink-0">
+      <div className="py-3 px-4 bg-white border-t flex-shrink-0">
         <div className="flex items-center space-x-2">
           <input
             ref={inputRef}
