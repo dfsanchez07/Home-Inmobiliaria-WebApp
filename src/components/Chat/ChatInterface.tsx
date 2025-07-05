@@ -71,18 +71,26 @@ export const ChatInterface: React.FC = () => {
           {chatMessages.map((msg) => (
             <div key={msg.id} className={`flex w-full ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.properties && msg.properties.length > 0 ? (
-                <div className="w-full overflow-x-auto pb-2">
-                  <div className="flex space-x-4">
-                    {msg.properties.map(prop => (
-                      <div key={prop.id} className="w-80 flex-shrink-0">
-                        <PropertyCard 
-                          property={prop} 
-                          onCardClick={openPropertyModal}
-                          hideScheduleButton
-                        />
-                      </div>
-                    ))}
+                <div className="w-full relative">
+                  <div className="overflow-x-auto pb-2 scrollbar-hide">
+                    <div className="flex space-x-4">
+                      {msg.properties.map(prop => (
+                        <div key={prop.id} className="flex-shrink-0 w-[80%] sm:w-80">
+                          <PropertyCard 
+                            property={prop} 
+                            onCardClick={openPropertyModal}
+                            hideScheduleButton
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                  {msg.properties.length > 1 && (
+                    <div 
+                      className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none sm:hidden"
+                      aria-hidden="true"
+                    />
+                  )}
                 </div>
               ) : (
                 <div className={`max-w-lg rounded-2xl ${msg.type === 'user' ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none border'}`}>

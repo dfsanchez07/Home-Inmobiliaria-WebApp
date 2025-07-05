@@ -40,16 +40,24 @@ export const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ title, prope
           </button>
         </div>
       </div>
-      <div ref={scrollRef} className="flex space-x-6 overflow-x-auto pb-4 scrollbar-hide">
-        {properties.map((property) => (
-          <div key={property.id} className="flex-shrink-0 w-full sm:w-[380px]">
-            <PropertyCard 
-              property={property} 
-              onCardClick={onCardClick}
-              hideScheduleButton
-            />
-          </div>
-        ))}
+      <div className="relative">
+        <div ref={scrollRef} className="flex space-x-4 sm:space-x-6 overflow-x-auto pb-4 scrollbar-hide">
+          {properties.map((property) => (
+            <div key={property.id} className="flex-shrink-0 w-[90%] sm:w-[380px]">
+              <PropertyCard 
+                property={property} 
+                onCardClick={onCardClick}
+                hideScheduleButton
+              />
+            </div>
+          ))}
+        </div>
+        {properties.length > 1 && (
+          <div 
+            className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none sm:hidden" 
+            aria-hidden="true" 
+          />
+        )}
       </div>
     </section>
   );
