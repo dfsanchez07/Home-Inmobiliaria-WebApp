@@ -7,10 +7,9 @@ interface CategoryCarouselProps {
   title: string;
   properties?: Property[];
   onCardClick: (property: Property) => void;
-  onScheduleVisit: (title: string) => void;
 }
 
-export const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ title, properties = [], onCardClick, onScheduleVisit }) => {
+export const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ title, properties = [], onCardClick }) => {
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -47,7 +46,7 @@ export const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ title, prope
             <PropertyCard 
               property={property} 
               onCardClick={onCardClick}
-              onScheduleVisit={onScheduleVisit}
+              hideScheduleButton
             />
           </div>
         ))}
