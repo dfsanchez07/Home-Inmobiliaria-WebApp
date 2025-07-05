@@ -56,7 +56,7 @@ export const ChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[70vh] max-h-[650px] bg-gray-50 border rounded-xl overflow-hidden">
+    <div className="flex flex-col h-full bg-gray-50 border rounded-xl overflow-hidden">
       <div className="p-4 border-b bg-white flex-shrink-0">
         <h3 className="text-lg font-semibold text-gray-800 flex items-center">
           <MessageSquare className="mr-2" style={{ color: config.primaryColor }} />

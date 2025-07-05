@@ -40,8 +40,10 @@ export const ChatWidget: React.FC = () => {
   }, [isExpanded, config.initialChatMessage, addChatMessage, chatMessages.length]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [chatMessages]);
+    if (isExpanded) {
+      scrollToBottom();
+    }
+  }, [chatMessages, isExpanded]);
 
   useEffect(() => {
     if (visitRequest) {
@@ -113,7 +115,7 @@ export const ChatWidget: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50">
       {!isExpanded && (
         <button
           onClick={() => setIsExpanded(true)}
@@ -125,8 +127,8 @@ export const ChatWidget: React.FC = () => {
       )}
 
       {isExpanded && (
-        <div className="bg-white rounded-2xl shadow-2xl w-96 h-[500px] flex flex-col border border-gray-200 transition-all duration-300">
-          <div className="text-white p-4 rounded-t-2xl flex items-center justify-between" style={{ backgroundColor: config.primaryColor }}>
+        <div className="fixed inset-0 bg-white flex flex-col animate-fade-in md:rounded-2xl md:w-96 md:h-[500px] md:bottom-6 md:right-6 md:inset-auto md:shadow-2xl border border-gray-200">
+          <div className="text-white p-4 flex items-center justify-between md:rounded-t-2xl flex-shrink-0" style={{ backgroundColor: config.primaryColor }}>
             <div className="flex items-center space-x-2">
               <MessageSquare className="h-5 w-5" />
               <span className="font-semibold">Asistente Virtual</span>
@@ -195,7 +197,7 @@ export const ChatWidget: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-4 border-t border-gray-200 bg-white">
+          <div className="p-4 border-t border-gray-200 bg-white flex-shrink-0">
             <div className="flex space-x-2">
               <input
                 ref={inputRef}
