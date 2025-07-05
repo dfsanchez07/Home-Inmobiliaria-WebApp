@@ -236,6 +236,8 @@ export const useAppStore = create<AppStore>()(
       sendMessage: async (text) => {
         const { addChatMessage, config, chatSessionId } = get();
         
+        set({ isLoading: true });
+
         const userMessage: ChatMessage = { id: `user-${Date.now()}`, type: 'user', content: text, timestamp: new Date() };
         addChatMessage(userMessage);
 
@@ -289,6 +291,8 @@ export const useAppStore = create<AppStore>()(
             timestamp: new Date(),
           };
           set(state => ({ chatMessages: state.chatMessages.filter(m => !m.isTyping).concat([errorMessage]) }));
+        } finally {
+          set({ isLoading: false });
         }
       },
 
