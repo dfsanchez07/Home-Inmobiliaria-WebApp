@@ -25,6 +25,9 @@ export interface AppConfig {
   footerCompanyName: string;
   footerDescription: string;
   footerLinks?: { name: string; url: string }[];
+  footerEmail?: string;
+  footerPhone?: string;
+  footerAddress?: string;
   adminUsername: string;
   adminPassword: string;
   quickQuestions: { id: string; text: string }[];
@@ -39,6 +42,10 @@ export interface AppConfig {
   menuItemFontSize?: number;
   showMobileMenu: boolean;
   categories: Category[];
+  showFooterSocialIcons: boolean;
+  showFooterQuickLinks: boolean;
+  showFooterContactInfo: boolean;
+  showFooterCopyright: boolean;
 }
 
 export interface Property {

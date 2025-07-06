@@ -24,23 +24,44 @@ export const ChatInterface: React.FC = () => {
 
   const [inputMessage, setInputMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [lastMessageTime, setLastMessageTime] = useState(0);
+  const THROTTLE_TIME = 1000; // 1 second between messages
 
   useEffect(() => {
     initializeChat();
   }, [initializeChat]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Scroll to bottom only within the chat container, not the whole page
+    if (messagesEndRef.current && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [chatMessages]);
 
   const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || isLoading) return;
+    
+    // Prevent rapid message submissions
+    const now = Date.now();
+    if (now - lastMessageTime < THROTTLE_TIME) {
+      return;
+    }
+    
+    setLastMessageTime(now);
     sendMessage(inputMessage);
     setInputMessage('');
   };
 
   const handleQuickQuestionClick = (text: string) => {
+    // Prevent rapid message submissions
+    const now = Date.now();
+    if (now - lastMessageTime < THROTTLE_TIME || isLoading) {
+      return;
+    }
+    
+    setLastMessageTime(now);
     sendMessage(text);
   };
 
@@ -58,7 +79,11 @@ export const ChatInterface: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-transparent">
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4" style={chatAreaStyle}>
+      <div 
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4" 
+        style={chatAreaStyle}
+      >
         {chatMessages.map((message) => (
           <div key={message.id}>
             <div className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -117,6 +142,7 @@ export const ChatInterface: React.FC = () => {
                 key={q.id}
                 onClick={() => handleQuickQuestionClick(q.text)}
                 className="flex-shrink-0 bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full hover:bg-blue-200 transition-colors"
+                disabled={isLoading}
               >
                 {q.text}
               </button>
@@ -132,7 +158,12 @@ export const ChatInterface: React.FC = () => {
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent form submission which might cause page scroll
+                handleSendMessage();
+              }
+            }}
             placeholder="Escribe tu mensaje..."
             className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
             disabled={isLoading}

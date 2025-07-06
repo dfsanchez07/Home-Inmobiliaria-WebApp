@@ -20,11 +20,16 @@ export const ChatWidget: React.FC = () => {
   } = useAppStore();
   const [inputMessage, setInputMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [lastMessageTime, setLastMessageTime] = useState(0);
+  const THROTTLE_TIME = 1000; // 1 second between messages
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -57,7 +62,14 @@ export const ChatWidget: React.FC = () => {
   }, [visitRequest, clearVisitRequest]);
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim() || !config.webhookUrl) return;
+    if (!inputMessage.trim() || !config.webhookUrl || isLoading) return;
+
+    // Prevent rapid message submissions
+    const now = Date.now();
+    if (now - lastMessageTime < THROTTLE_TIME) {
+      return;
+    }
+    setLastMessageTime(now);
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -141,7 +153,10 @@ export const ChatWidget: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+          <div 
+            ref={chatContainerRef}
+            className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50"
+          >
             {chatMessages.map((message) => (
               <div key={message.id}>
                 <div
@@ -204,7 +219,12 @@ export const ChatWidget: React.FC = () => {
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent form submission which might cause page scroll
+                    handleSendMessage();
+                  }
+                }}
                 placeholder="Escribe tu mensaje..."
                 className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:border-transparent"
                 style={{'--tw-ring-color': config.primaryColor} as React.CSSProperties}

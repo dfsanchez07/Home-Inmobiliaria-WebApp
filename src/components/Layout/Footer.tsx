@@ -24,184 +24,88 @@ export const Footer: React.FC = () => {
   return (
     <footer
       id="contacto"
-      className="shadow-inner"
+      className="py-12 border-t-4 border-red-600"
       style={{
         backgroundColor: config.footerBgColor,
         color: config.footerTextColor,
       }}
     >
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid md:grid-cols-3 gap-8 md:items-start">
           {/* Columna 1: Logo + descripción + redes */}
-          <div className="space-y-8 xl:col-span-1">
-            {config.logo ? (
-              <img src={config.logo} alt={config.title} className="h-12" />
-            ) : (
-              <div className="p-2 bg-blue-600 rounded-lg inline-block">
-                <h1 className="text-xl font-bold text-white">
-                  {config.title}
-                </h1>
+          <div>
+            <div className="flex items-center space-x-3 mb-4">
+              {config.logo ? (
+                <img
+                  src={config.logo}
+                  alt={config.footerCompanyName}
+                  className="h-10 w-10 object-contain"
+                />
+              ) : (
+                <div className="w-10 h-10 bg-blue-600 rounded-lg"></div>
+              )}
+              <h3 className="text-2xl font-bold">{config.footerCompanyName}</h3>
+            </div>
+            <p className="opacity-80 mb-6">{config.footerDescription}</p>
+            {config.showFooterSocialIcons && (
+              <div className="flex space-x-4 mt-4">
+                {config.socialLinks?.map((link) => (
+                  <a
+                    key={link.id}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:opacity-75 transition-opacity"
+                    style={{ color: config.footerTextColor }}
+                    title={link.name}
+                  >
+                    <span className="sr-only">{link.name}</span>
+                    {socialIcons[link.icon] || <span>{link.name}</span>}
+                  </a>
+                ))}
               </div>
             )}
-            <p className="text-base" style={{ color: config.footerTextColor }}>
-              {config.footerText ||
-                'Tu socio de confianza en bienes raíces.'}
+          </div>
+
+          {/* Columna 2: Enlaces Rápidos */}
+          {config.showFooterQuickLinks && (
+            <div className="md:pl-8">
+              <h4 className="text-lg font-semibold mb-4">Enlaces Rápidos</h4>
+              <div className="space-y-2">
+                {config.footerLinks.map((link, index) => (
+                  <a
+                    key={index}
+                    href={link.url}
+                    className="block opacity-80 hover:opacity-100 transition-opacity"
+                  >
+                    {link.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Columna 3: Contacto */}
+          {config.showFooterContactInfo && (
+            <div className="md:pl-8">
+              <h4 className="text-lg font-semibold mb-4">Contacto</h4>
+              <div className="space-y-2 opacity-80">
+                {config.footerEmail && <p>📧 {config.footerEmail}</p>}
+                {config.footerPhone && <p>📱 {config.footerPhone}</p>}
+                {config.footerAddress && <p>📍 {config.footerAddress}</p>}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {config.showFooterCopyright && (
+          <div className="border-t border-opacity-20 mt-8 pt-8 text-center opacity-60">
+            <p>
+              &copy; {new Date().getFullYear()} {config.footerCompanyName}. Todos los
+              derechos reservados.
             </p>
-            <div className="flex space-x-6">
-              {config.socialLinks?.map((link) => (
-                <a
-                  key={link.id}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:opacity-75 transition-opacity"
-                  style={{ color: config.footerTextColor }}
-                  title={link.name}
-                >
-                  <span className="sr-only">{link.name}</span>
-                  {socialIcons[link.icon] || <span>{link.name}</span>}
-                </a>
-              ))}
-            </div>
           </div>
-
-          {/* Columnas 2 y 3 combinadas */}
-          <div className="mt-12 xl:mt-0 xl:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Soluciones y Soporte */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3
-                  className="text-sm font-semibold tracking-wider uppercase"
-                  style={{ color: config.footerTextColor }}
-                >
-                  Soluciones
-                </h3>
-                <ul className="mt-4 space-y-4">
-                  <li>
-                    <a
-                      href="#propiedades"
-                      className="text-base hover:underline"
-                      style={{ color: config.footerTextColor }}
-                    >
-                      Propiedades
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#chat"
-                      className="text-base hover:underline"
-                      style={{ color: config.footerTextColor }}
-                    >
-                      Asistente IA
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3
-                  className="text-sm font-semibold tracking-wider uppercase"
-                  style={{ color: config.footerTextColor }}
-                >
-                  Soporte
-                </h3>
-                <ul className="mt-4 space-y-4">
-                  <li>
-                    <a
-                      href="#"
-                      className="text-base hover:underline"
-                      style={{ color: config.footerTextColor }}
-                    >
-                      Preguntas Frecuentes
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-base hover:underline"
-                      style={{ color: config.footerTextColor }}
-                    >
-                      Contacto
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Compañía y Legal */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3
-                  className="text-sm font-semibold tracking-wider uppercase"
-                  style={{ color: config.footerTextColor }}
-                >
-                  Compañía
-                </h3>
-                <ul className="mt-4 space-y-4">
-                  <li>
-                    <a
-                      href="#"
-                      className="text-base hover:underline"
-                      style={{ color: config.footerTextColor }}
-                    >
-                      Sobre Nosotros
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-base hover:underline"
-                      style={{ color: config.footerTextColor }}
-                    >
-                      Blog
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3
-                  className="text-sm font-semibold tracking-wider uppercase"
-                  style={{ color: config.footerTextColor }}
-                >
-                  Legal
-                </h3>
-                <ul className="mt-4 space-y-4">
-                  <li>
-                    <a
-                      href="#"
-                      className="text-base hover:underline"
-                      style={{ color: config.footerTextColor }}
-                    >
-                      Privacidad
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="text-base hover:underline"
-                      style={{ color: config.footerTextColor }}
-                    >
-                      Términos
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Pie de página inferior */}
-        <div
-          className="mt-12 border-t pt-8"
-          style={{ borderColor: 'rgba(255,255,255,0.1)' }}
-        >
-          <p
-            className="text-base text-center"
-            style={{ color: config.footerTextColor }}
-          >
-            &copy; {new Date().getFullYear()} {config.title}. Todos los
-            derechos reservados.
-          </p>
-        </div>
+        )}
       </div>
     </footer>
   );

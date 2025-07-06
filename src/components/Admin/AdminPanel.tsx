@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Database, Palette, Save, Key, Home, LogOut, Upload, Trash2, Edit, Plus, MessageSquare, ListChecks, Ruler, Menu as MenuIcon } from 'lucide-react';
+import { Settings, Database, Palette, Save, Key, Home, LogOut, Upload, Trash2, Edit, Plus, MessageSquare, ListChecks, Ruler, Menu as MenuIcon, Eye, EyeOff } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { ApiService } from '../../services/api';
 import { Category, AppConfig } from '../../types';
@@ -740,7 +740,7 @@ const renderAppearanceTab = () => (
       {/* Footer Section */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h4 className="text-lg font-semibold text-gray-900 mb-4">Configuración del Pie de Página</h4>
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Nombre de la Empresa
@@ -765,6 +765,43 @@ const renderAppearanceTab = () => (
             />
           </div>
 
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email de Contacto
+              </label>
+              <input
+                type="email"
+                value={formData.footerEmail || ''}
+                onChange={(e) => setFormData({ ...formData, footerEmail: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Teléfono de Contacto
+              </label>
+              <input
+                type="text"
+                value={formData.footerPhone || ''}
+                onChange={(e) => setFormData({ ...formData, footerPhone: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Dirección
+            </label>
+            <input
+              type="text"
+              value={formData.footerAddress || ''}
+              onChange={(e) => setFormData({ ...formData, footerAddress: e.target.value })}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Color del Texto del Pie de Página
@@ -783,6 +820,32 @@ const renderAppearanceTab = () => (
                 className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t">
+            <h5 className="font-medium text-gray-800">Visibilidad de Secciones</h5>
+            {[
+              { key: 'showFooterSocialIcons', label: 'Mostrar Iconos Sociales' },
+              { key: 'showFooterQuickLinks', label: 'Mostrar Enlaces Rápidos' },
+              { key: 'showFooterContactInfo', label: 'Mostrar Información de Contacto' },
+              { key: 'showFooterCopyright', label: 'Mostrar Línea de Copyright' },
+            ].map(item => (
+              <div key={item.key} className="flex items-center justify-between">
+                <label htmlFor={item.key} className="text-gray-700">
+                  {item.label}
+                </label>
+                <div className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    id={item.key}
+                    className="sr-only peer"
+                    checked={formData[item.key as keyof AppConfig] as boolean}
+                    onChange={(e) => setFormData({ ...formData, [item.key]: e.target.checked })}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

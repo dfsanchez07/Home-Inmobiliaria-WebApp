@@ -65,6 +65,9 @@ const defaultConfig: AppConfig = {
     { name: 'Contacto', url: '#contacto' },
     { name: 'Nosotros', url: '#nosotros' }
   ],
+  footerEmail: 'info@homeinmobiliaria.co',
+  footerPhone: '+57 324 780 9184',
+  footerAddress: 'Popayán, Cauca, Colombia',
   quickQuestions: [
     { id: 'q1', text: '¿Qué casas hay en venta?' },
     { id: 'q2', text: 'Busco un apartamento en arriendo' },
@@ -87,6 +90,10 @@ const defaultConfig: AppConfig = {
   menuItemFontSize: 16,
   showMobileMenu: true,
   categories: [],
+  showFooterSocialIcons: true,
+  showFooterQuickLinks: true,
+  showFooterContactInfo: true,
+  showFooterCopyright: true,
 };
 
 export const useAppStore = create<AppStore>()(
