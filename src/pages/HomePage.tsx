@@ -8,6 +8,7 @@ import { ApiService } from '../services/api';
 import { PropertyModal } from '../components/Property/PropertyModal';
 import { ImageModal } from '../components/ImageModal';
 import { ChatWidget } from '../components/Layout/ChatWidget';
+import { HeroSection } from '../components/Hero/HeroSection';
 
 export const HomePage: React.FC = () => {
   const { 
@@ -130,12 +131,13 @@ export const HomePage: React.FC = () => {
     <div className="min-h-screen bg-white">
       <ImageModal />
       <Header />
+     {/* <HeroSection /> <-- oculta seccion Hero */}
       
       {config.chatDisplayMode === 'embedded' && <EmbeddedChat />}
       {config.chatDisplayMode === 'widget' && <ChatWidget />}
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16">
-        <div id="propiedades">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div id="propiedades" className="space-y-16">
           {safeCategories.map((category) => (
             <CategoryCarousel
               key={category.id}

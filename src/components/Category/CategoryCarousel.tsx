@@ -28,7 +28,7 @@ export const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ title, prope
   }
 
   return (
-    <section className="mb-16">
+    <section className="relative">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold text-gray-800">{title}</h2>
         <div className="hidden sm:flex space-x-2">
@@ -41,9 +41,12 @@ export const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ title, prope
         </div>
       </div>
       <div className="relative">
-        <div ref={scrollRef} className="flex space-x-4 sm:space-x-6 overflow-x-auto pb-4 scrollbar-hide">
+        <div 
+          ref={scrollRef} 
+          className="grid grid-flow-col auto-cols-[90%] sm:auto-cols-[380px] gap-4 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide"
+        >
           {properties.map((property) => (
-            <div key={property.id} className="flex-shrink-0 w-[90%] sm:w-[380px]">
+            <div key={property.id}>
               <PropertyCard 
                 property={property} 
                 onCardClick={onCardClick}
@@ -54,7 +57,7 @@ export const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ title, prope
         </div>
         {properties.length > 1 && (
           <div 
-            className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none sm:hidden" 
+            className="absolute inset-y-0 right-0 -mr-4 sm:-mr-6 lg:-mr-8 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none sm:hidden" 
             aria-hidden="true" 
           />
         )}
