@@ -116,7 +116,8 @@ export const ChatInterface: React.FC = () => {
                   )}
                 </div>
               ) : (
-                <div className={`max-w-lg rounded-2xl ${msg.type === 'user' ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none border'}`}>
+                <div className={`max-w-lg rounded-2xl ${msg.type === 'user' ? 'text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none border' }`}
+ 									 style={msg.type === 'user' ? { backgroundColor: config.primaryColor } : {}}>
                   {msg.isTyping ? <TypingIndicator /> : <p className="text-sm p-3">{msg.content}</p>}
                 </div>
               )}
