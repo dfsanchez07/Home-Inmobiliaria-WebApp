@@ -43,10 +43,18 @@ export const CategoryCarousel: React.FC<CategoryCarouselProps> = ({ title, prope
       <div className="relative">
         <div 
           ref={scrollRef} 
-          className="grid grid-flow-col auto-cols-[90%] sm:auto-cols-[380px] gap-4 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide"
+          className="flex overflow-x-auto pb-4 scrollbar-hide -mx-2 px-2"
+          style={{
+            WebkitOverflowScrolling: 'touch', /* Para mejor desplazamiento en iOS */
+            scrollSnapType: 'x mandatory'
+          }}
         >
           {properties.map((property) => (
-            <div key={property.id}>
+            <div 
+              key={property.id} 
+              className="flex-shrink-0 w-[90%] sm:w-[380px] px-2"
+              style={{ scrollSnapAlign: 'start' }}
+            >
               <PropertyCard 
                 property={property} 
                 onCardClick={onCardClick}
