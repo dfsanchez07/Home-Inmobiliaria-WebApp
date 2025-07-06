@@ -83,6 +83,9 @@ const defaultConfig: AppConfig = {
     { id: 'facebook', name: 'Facebook', url: 'https://facebook.com', icon: 'facebook' },
     { id: 'instagram', name: 'Instagram', url: 'https://instagram.com', icon: 'instagram' }
   ],
+  socialIconSize: 20,
+  menuItemFontSize: 16,
+  showMobileMenu: true,
   categories: [],
 };
 

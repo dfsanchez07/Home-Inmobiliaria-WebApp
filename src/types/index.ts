@@ -35,6 +35,10 @@ export interface AppConfig {
   chatSectionBgImage?: string;
   chatSectionBgColor?: string;
   socialLinks: SocialLink[];
+  socialIconSize?: number;
+  menuItemFontSize?: number;
+  showMobileMenu: boolean;
+  categories: Category[];
 }
 
 export interface Property {

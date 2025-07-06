@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Database, Palette, Save, Key, Home, LogOut, Upload, Trash2, Edit, Plus, MessageSquare, ListChecks } from 'lucide-react';
+import { Settings, Database, Palette, Save, Key, Home, LogOut, Upload, Trash2, Edit, Plus, MessageSquare, ListChecks, Ruler, Menu as MenuIcon } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { ApiService } from '../../services/api';
 import { Category, AppConfig } from '../../types';
@@ -412,6 +412,29 @@ const renderAppearanceTab = () => (
         </div>
       </div>
 
+      {/* Header Settings Section */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="flex items-center space-x-3 mb-4">
+          <MenuIcon className="h-6 w-6 text-gray-600" />
+          <h4 className="text-lg font-semibold text-gray-900">Configuración del Encabezado</h4>
+        </div>
+        <div className="flex items-center justify-between">
+          <label htmlFor="toggle-mobile-menu" className="text-gray-700 font-medium">
+            Mostrar menú de hamburguesa en móvil
+          </label>
+          <div className="relative inline-flex items-center cursor-pointer">
+            <input 
+              type="checkbox" 
+              id="toggle-mobile-menu" 
+              className="sr-only peer"
+              checked={formData.showMobileMenu}
+              onChange={(e) => setFormData({ ...formData, showMobileMenu: e.target.checked })}
+            />
+            <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </div>
+        </div>
+      </div>
+
       {/* Chat Display Mode Section */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h4 className="text-lg font-semibold text-gray-900 mb-4">Modo de Visualización del Chat</h4>
@@ -677,6 +700,39 @@ const renderAppearanceTab = () => (
                 className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sizing Section */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="flex items-center space-x-3 mb-4">
+          <Ruler className="h-6 w-6 text-indigo-600" />
+          <h4 className="text-lg font-semibold text-gray-900">Tamaños y Espaciado</h4>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tamaño de Íconos Sociales (px)
+            </label>
+            <input
+              type="number"
+              value={formData.socialIconSize || 20}
+              onChange={(e) => setFormData({ ...formData, socialIconSize: Number(e.target.value) })}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tamaño de Fuente del Menú (px)
+            </label>
+            <input
+              type="number"
+              value={formData.menuItemFontSize || 16}
+              onChange={(e) => setFormData({ ...formData, menuItemFontSize: Number(e.target.value) })}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
         </div>
       </div>
