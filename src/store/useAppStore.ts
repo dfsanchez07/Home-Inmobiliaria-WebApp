@@ -7,6 +7,7 @@ interface AppStore {
   config: AppConfig;
   chatMessages: ChatMessage[];
   isLoading: boolean;
+  isSendingMessage: boolean;  // Flag específico para envío de mensajes
   error: string | null;
   isAuthenticated: boolean;
   chatSessionId: string;
@@ -102,6 +103,7 @@ export const useAppStore = create<AppStore>()(
       config: defaultConfig,
       chatMessages: [],
       isLoading: false,
+      isSendingMessage: false,  // Estado inicial del flag de envío
       error: null,
       isAuthenticated: false,
       chatSessionId: `session-${Date.now()}-${Math.random()}`,
@@ -260,9 +262,21 @@ export const useAppStore = create<AppStore>()(
       sendMessage: async (text) => {
         const { addChatMessage, config, chatSessionId } = get();
         
-        set({ isLoading: true });
+        // Prevenir múltiples envíos simultáneos
+        if (get().isSendingMessage) return;
 
-        const userMessage: ChatMessage = { id: `user-${Date.now()}`, type: 'user', content: text, timestamp: new Date() };
+        // Establecer estado de envío para prevenir múltiples envíos
+        set({ 
+          isSendingMessage: true, 
+          isLoading: true 
+        });
+
+        const userMessage: ChatMessage = { 
+          id: `user-${Date.now()}`, 
+          type: 'user', 
+          content: text, 
+          timestamp: new Date() 
+        };
         addChatMessage(userMessage);
 
         const typingMessage: ChatMessage = {
@@ -277,7 +291,12 @@ export const useAppStore = create<AppStore>()(
         try {
           const response = await ApiService.sendChatMessage(config.webhookUrl, text, chatSessionId);
           
-          set(state => ({ chatMessages: state.chatMessages.filter(m => !m.isTyping) }));
+          // Remover indicador de escritura
+          set(state => ({ 
+            chatMessages: state.chatMessages.filter(m => !m.isTyping),
+            isSendingMessage: false,
+            isLoading: false
+          }));
 
           if (response.output.text) {
             addChatMessage({
@@ -314,9 +333,11 @@ export const useAppStore = create<AppStore>()(
             content: 'Lo siento, ha ocurrido un error. Por favor, intenta de nuevo.',
             timestamp: new Date(),
           };
-          set(state => ({ chatMessages: state.chatMessages.filter(m => !m.isTyping).concat([errorMessage]) }));
-        } finally {
-          set({ isLoading: false });
+          set(state => ({ 
+            chatMessages: state.chatMessages.filter(m => !m.isTyping).concat([errorMessage]),
+            isSendingMessage: false,
+            isLoading: false
+          }));
         }
       },
 

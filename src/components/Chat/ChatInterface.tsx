@@ -19,6 +19,7 @@ export const ChatInterface: React.FC = () => {
     sendMessage,
     initializeChat,
     isLoading,
+    isSendingMessage,  // Add this destructured state
   } = useAppStore(state => ({
     config: state.config,
     chatMessages: state.chatMessages,
@@ -26,12 +27,13 @@ export const ChatInterface: React.FC = () => {
     sendMessage: state.sendMessage,
     initializeChat: state.initializeChat,
     isLoading: state.isLoading,
+    isSendingMessage: state.isSendingMessage,  // Add this selector
   }));
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [isFocused, setIsFocused] = useState(false); // State to track input focus
+  const [isFocused, setIsFocused] = useState(false);
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -47,25 +49,22 @@ export const ChatInterface: React.FC = () => {
     scrollToBottom();
   }, [chatMessages]);
 
-  // This effect restores focus to the input if it was focused before a re-render
   useEffect(() => {
     if (isFocused && inputRef.current) {
       inputRef.current.focus({ preventScroll: true });
     }
-  }, [chatMessages, isLoading, isFocused]); // Re-run when messages or loading state change
+  }, [chatMessages, isLoading, isFocused]);
 
   const handleSend = async (messageText?: string) => {
     const text = messageText || input;
-    if (!text.trim() || isLoading) return;
+    if (!text.trim() || isSendingMessage) return;
 
     setInput('');
     await sendMessage(text);
-    // After sending, we want to ensure the input is focused for the next message.
     inputRef.current?.focus({ preventScroll: true });
-    setIsFocused(true); // Explicitly set focus state after sending
+    setIsFocused(true);
   };
 
-  // Configuración del estilo del área de chat
   const chatAreaStyle: React.CSSProperties = {
     transition: 'background 0.3s ease',
   };
@@ -138,11 +137,11 @@ export const ChatInterface: React.FC = () => {
             onBlur={() => setIsFocused(false)}
             placeholder="Escribe tu mensaje..."
             className="flex-grow border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            disabled={isLoading}
+            disabled={isSendingMessage}  // Use isSendingMessage to disable input
           />
           <button
             onClick={() => handleSend()}
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || isSendingMessage}  // Use isSendingMessage to disable button
             className="w-10 h-10 rounded-full text-white flex items-center justify-center transition-colors disabled:opacity-50"
             style={{ backgroundColor: config.primaryColor }}
           >
@@ -151,7 +150,12 @@ export const ChatInterface: React.FC = () => {
         </div>
         <div className="flex flex-wrap gap-2 mt-3">
           {config.quickQuestions.map(q => (
-            <button key={q.id} onClick={() => handleSend(q.text)} className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full" disabled={isLoading}>
+            <button 
+              key={q.id} 
+              onClick={() => handleSend(q.text)} 
+              className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full" 
+              disabled={isSendingMessage}  // Disable quick questions when sending
+            >
               {q.text}
             </button>
           ))}
