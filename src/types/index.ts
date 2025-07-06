@@ -30,6 +30,10 @@ export interface AppConfig {
   quickQuestions: { id: string; text: string }[];
   visibleDetails: string[];
   chatDisplayMode: 'widget' | 'embedded';
+  chatBackgroundImage?: string;
+  chatBgColor?: string;
+  chatSectionBgImage?: string;
+  chatSectionBgColor?: string;
   socialLinks: SocialLink[];
 }
 
@@ -57,7 +61,7 @@ export interface Category {
 }
 
 export interface ChatMessage {
-  id: string;
+  id:string;
   type: 'user' | 'assistant';
   content: string;
   timestamp: Date;

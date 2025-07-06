@@ -75,6 +75,10 @@ const defaultConfig: AppConfig = {
   adminUsername: 'admin',
   adminPassword: 'admin123',
   chatDisplayMode: 'embedded',
+  chatBackgroundImage: '',
+  chatBgColor: '#ffffff',
+  chatSectionBgImage: '',
+  chatSectionBgColor: '#F3F4F6',
   socialLinks: [
     { id: 'facebook', name: 'Facebook', url: 'https://facebook.com', icon: 'facebook' },
     { id: 'instagram', name: 'Instagram', url: 'https://instagram.com', icon: 'instagram' }

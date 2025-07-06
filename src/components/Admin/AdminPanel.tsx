@@ -441,6 +441,120 @@ const renderAppearanceTab = () => (
         </div>
       </div>
 
+      {/* Chat Background Section */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <h4 className="text-lg font-semibold text-gray-900 mb-4">Fondo del Chat (Interior)</h4>
+        <p className="text-sm text-gray-600 mb-4">
+          Personaliza el fondo del área de mensajes del chat. La imagen tiene prioridad sobre el color.
+        </p>
+        <div className="space-y-4">
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Imagen de Fondo para el Chat
+            </label>
+            <div className="flex items-center space-x-4">
+              {formData.chatBackgroundImage && (
+                <img src={formData.chatBackgroundImage} alt="Fondo del Chat" className="h-16 w-32 object-cover border border-gray-200 rounded-lg" />
+              )}
+              <button
+                onClick={() => handleImageUpload('chatBackgroundImage')}
+                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2"
+              >
+                <Upload className="h-4 w-4" />
+                <span>Subir Imagen</span>
+              </button>
+              {formData.chatBackgroundImage && (
+                  <button
+                      onClick={() => setFormData({ ...formData, chatBackgroundImage: '' })}
+                      className="text-red-600 hover:text-red-900 p-2"
+                      title="Eliminar imagen"
+                  >
+                      <Trash2 className="h-5 w-5" />
+                  </button>
+              )}
+            </div>
+          </div>
+          {/* Color Picker */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Color de Fondo del Chat (si no hay imagen)
+            </label>
+            <div className="flex items-center space-x-3">
+              <input
+                type="color"
+                value={formData.chatBgColor || '#ffffff'}
+                onChange={(e) => setFormData({ ...formData, chatBgColor: e.target.value })}
+                className="w-12 h-12 border border-gray-300 rounded-lg cursor-pointer"
+              />
+              <input
+                type="text"
+                value={formData.chatBgColor || '#ffffff'}
+                onChange={(e) => setFormData({ ...formData, chatBgColor: e.target.value })}
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Section Background Section */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <h4 className="text-lg font-semibold text-gray-900 mb-4">Fondo de la Sección del Chat (Exterior)</h4>
+        <p className="text-sm text-gray-600 mb-4">
+          Personaliza el fondo del área donde se incrusta el chat. La imagen tiene prioridad sobre el color.
+        </p>
+        <div className="space-y-4">
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Imagen de Fondo de la Sección
+            </label>
+            <div className="flex items-center space-x-4">
+              {formData.chatSectionBgImage && (
+                <img src={formData.chatSectionBgImage} alt="Fondo de la Sección del Chat" className="h-16 w-32 object-cover border border-gray-200 rounded-lg" />
+              )}
+              <button
+                onClick={() => handleImageUpload('chatSectionBgImage')}
+                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2"
+              >
+                <Upload className="h-4 w-4" />
+                <span>Subir Imagen</span>
+              </button>
+              {formData.chatSectionBgImage && (
+                  <button
+                      onClick={() => setFormData({ ...formData, chatSectionBgImage: '' })}
+                      className="text-red-600 hover:text-red-900 p-2"
+                      title="Eliminar imagen"
+                  >
+                      <Trash2 className="h-5 w-5" />
+                  </button>
+              )}
+            </div>
+          </div>
+          {/* Color Picker */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Color de Fondo de la Sección
+            </label>
+            <div className="flex items-center space-x-3">
+              <input
+                type="color"
+                value={formData.chatSectionBgColor}
+                onChange={(e) => setFormData({ ...formData, chatSectionBgColor: e.target.value })}
+                className="w-12 h-12 border border-gray-300 rounded-lg cursor-pointer"
+              />
+              <input
+                type="text"
+                value={formData.chatSectionBgColor}
+                onChange={(e) => setFormData({ ...formData, chatSectionBgColor: e.target.value })}
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Colors Section */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h4 className="text-lg font-semibold text-gray-900 mb-4">Esquema de Colores</h4>

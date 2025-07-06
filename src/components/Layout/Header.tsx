@@ -24,29 +24,33 @@ export const Header: React.FC = () => {
 
   return (
     <header
-      className="shadow-sm border-b border-gray-100"
+      className="relative border-b-4 border-red-600"
       style={{ backgroundColor: config.headerBgColor }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-3 items-center h-16">
-          {/* Logo e título */}
-          <div className="flex items-center space-x-3">
-            {config.logo ? (
-              <img
-                src={config.logo}
-                alt={config.title}
-                className="h-10 w-10 object-contain"
-              />
-            ) : (
-              <div className="p-2 bg-blue-600 rounded-lg">
-                <Building2 className="h-6 w-6 text-white" />
-              </div>
-            )}
-            <h1 className="text-xl font-bold text-gray-900">{config.title}</h1>
+        <div className="grid grid-cols-3 items-center h-28">
+          {/* Columna 1: Logo (ahora posicionado absolutamente) */}
+          <div className="flex items-center">
+            <div
+              className="absolute left-4 sm:left-6 lg:left-8 top-full -translate-y-1/2 z-20 
+                         bg-white p-2 rounded-full shadow-lg"
+            >
+              {config.logo ? (
+                <img
+                  src={config.logo}
+                  alt={config.title}
+                  className="h-[120px] w-[120px] object-contain rounded-full"
+                />
+              ) : (
+                <div className="p-2 bg-blue-600 rounded-full">
+                  <Building2 className="h-16 w-16 text-white" />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Menú centrado */}
-          <nav className="hidden md:flex justify-center space-x-8">
+          <nav className="hidden md:flex justify-center items-center space-x-8">
             {['Inicio', 'Asistente', 'Propiedades', 'Contacto'].map((item) => {
               const href = `#${item.toLowerCase()}`;
               return (

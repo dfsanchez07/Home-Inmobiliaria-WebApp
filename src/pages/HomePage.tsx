@@ -133,7 +133,7 @@ export const HomePage: React.FC = () => {
       {config.chatDisplayMode === 'embedded' && <EmbeddedChat />}
       {config.chatDisplayMode === 'widget' && <ChatWidget />}
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16">
         <div id="propiedades">
           {safeCategories.map((category) => (
             <CategoryCarousel
