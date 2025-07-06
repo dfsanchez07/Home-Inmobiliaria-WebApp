@@ -31,6 +31,7 @@ export const ChatInterface: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [isFocused, setIsFocused] = useState(false); // State to track input focus
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -46,13 +47,22 @@ export const ChatInterface: React.FC = () => {
     scrollToBottom();
   }, [chatMessages]);
 
+  // This effect restores focus to the input if it was focused before a re-render
+  useEffect(() => {
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus({ preventScroll: true });
+    }
+  }, [chatMessages, isLoading, isFocused]); // Re-run when messages or loading state change
+
   const handleSend = async (messageText?: string) => {
     const text = messageText || input;
     if (!text.trim() || isLoading) return;
 
     setInput('');
     await sendMessage(text);
+    // After sending, we want to ensure the input is focused for the next message.
     inputRef.current?.focus({ preventScroll: true });
+    setIsFocused(true); // Explicitly set focus state after sending
   };
 
   // Configuración del estilo del área de chat
@@ -124,6 +134,8 @@ export const ChatInterface: React.FC = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             placeholder="Escribe tu mensaje..."
             className="flex-grow border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             disabled={isLoading}
