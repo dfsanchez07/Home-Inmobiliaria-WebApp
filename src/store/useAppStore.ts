@@ -5,7 +5,6 @@ import { ApiService } from '../services/api';
 
 interface AppStore {
   config: AppConfig;
-  categories: Category[];
   chatMessages: ChatMessage[];
   isLoading: boolean;
   error: string | null;
@@ -27,9 +26,9 @@ interface AppStore {
   clearChat: () => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  addCategory: (category: Category) => void;
-  updateCategory: (id: string, category: Partial<Category>) => void;
-  deleteCategory: (id: string) => void;
+  addCategory: (category: Category) => Promise<void>;
+  updateCategory: (id: string, category: Partial<Category>) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
   login: (username: string, password: string) => boolean;
   logout: () => void;
   requestVisit: (propertyTitle: string) => void;
@@ -80,13 +79,13 @@ const defaultConfig: AppConfig = {
     { id: 'facebook', name: 'Facebook', url: 'https://facebook.com', icon: 'facebook' },
     { id: 'instagram', name: 'Instagram', url: 'https://instagram.com', icon: 'instagram' }
   ],
+  categories: [],
 };
 
 export const useAppStore = create<AppStore>()(
   persist(
     (set, get) => ({
       config: defaultConfig,
-      categories: [],
       chatMessages: [],
       isLoading: false,
       error: null,
@@ -101,12 +100,14 @@ export const useAppStore = create<AppStore>()(
       fetchAndSetConfig: async () => {
         set({ isLoading: true });
         try {
-          // The ApiService now uses environment variables for this call.
           const fetchedConfig = await ApiService.fetchConfig();
+          // Ensure categories is always an array
+          if (!fetchedConfig.categories) {
+            fetchedConfig.categories = [];
+          }
           set({ config: { ...defaultConfig, ...fetchedConfig }, isLoading: false });
         } catch (error) {
           console.error("Failed to fetch config:", error);
-          // Fallback to default config if .env is not set or fetch fails
           set({ 
             error: 'No se pudo cargar la configuración del servidor. Usando configuración por defecto.', 
             isLoading: false,
@@ -122,12 +123,11 @@ export const useAppStore = create<AppStore>()(
         set({ isLoading: true, config: updatedConfig });
 
         try {
-          // The ApiService now uses environment variables for this call.
           await ApiService.updateConfig(updatedConfig);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to save config:", error);
-          set({ error: 'No se pudo guardar la configuración.', isLoading: false, config: originalConfig }); // Revert on error
+          set({ error: 'No se pudo guardar la configuración.', isLoading: false, config: originalConfig });
         }
       },
 
@@ -147,7 +147,10 @@ export const useAppStore = create<AppStore>()(
         set({ isAuthenticated: false });
       },
 
-      setCategories: (categories) => set({ categories }),
+      setCategories: (categories) => {
+        const config = get().config;
+        set({ config: { ...config, categories } });
+      },
 
       addChatMessage: (message) =>
         set((state) => ({
@@ -186,29 +189,36 @@ export const useAppStore = create<AppStore>()(
 
       setError: (error) => set({ error }),
 
-      addCategory: (category) =>
-        set((state) => ({
-          categories: [...state.categories, { ...category, properties: category.properties || [] }]
-        })),
+      addCategory: async (category) => {
+        const { config, updateAndSaveConfig } = get();
+        const newCategories = [...config.categories, { ...category, properties: category.properties || [] }];
+        set({ config: { ...config, categories: newCategories } });
+        await updateAndSaveConfig({ categories: newCategories });
+      },
 
-      updateCategory: (id, updatedCategory) =>
-        set((state) => ({
-          categories: state.categories.map(c => 
-            c.id === id ? { ...c, ...updatedCategory } : c
-          )
-        })),
+      updateCategory: async (id, updatedCategory) => {
+        const { config, updateAndSaveConfig } = get();
+        const newCategories = config.categories.map(c => 
+          c.id === id ? { ...c, ...updatedCategory } : c
+        );
+        set({ config: { ...config, categories: newCategories } });
+        await updateAndSaveConfig({ categories: newCategories });
+      },
 
-      deleteCategory: (id) =>
-        set((state) => ({
-          categories: state.categories.filter(c => c.id !== id)
-        })),
+      deleteCategory: async (id) => {
+        const { config, updateAndSaveConfig } = get();
+        const newCategories = config.categories.filter(c => c.id !== id);
+        set({ config: { ...config, categories: newCategories } });
+        await updateAndSaveConfig({ categories: newCategories });
+      },
       
-      setCategoryProperties: (categoryId, properties) =>
-        set((state) => ({
-          categories: state.categories.map(c =>
-            c.id === categoryId ? { ...c, properties } : c
-          )
-        })),
+      setCategoryProperties: (categoryId, properties) => {
+        const config = get().config;
+        const newCategories = config.categories.map(c =>
+          c.id === categoryId ? { ...c, properties } : c
+        );
+        set({ config: { ...config, categories: newCategories } });
+      },
 
       requestVisit: (propertyTitle) => {
         const { sendMessage, config, closePropertyModal } = get();
@@ -302,14 +312,16 @@ export const useAppStore = create<AppStore>()(
       name: 'real-estate-app-storage',
       partialize: (state) => ({ 
         isAuthenticated: state.isAuthenticated,
-        categories: state.categories,
+        config: { categories: state.config.categories },
       }),
       merge: (persistedState, currentState) => {
         const state = { ...currentState };
         const pState = persistedState as any;
         if (pState) {
           state.isAuthenticated = pState.isAuthenticated || false;
-          state.categories = pState.categories || [];
+          if (pState.config && pState.config.categories) {
+            state.config.categories = pState.config.categories;
+          }
         }
         return state;
       },

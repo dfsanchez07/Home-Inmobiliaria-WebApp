@@ -13,7 +13,6 @@ const AdminPanel = () => {
     updateAndSaveConfig,
     logout,
     setError,
-    categories,
     addCategory,
     updateCategory,
     deleteCategory,
@@ -22,7 +21,6 @@ const AdminPanel = () => {
     updateAndSaveConfig: state.updateAndSaveConfig,
     logout: state.logout,
     setError: state.setError,
-    categories: state.categories,
     addCategory: state.addCategory,
     updateCategory: state.updateCategory,
     deleteCategory: state.deleteCategory,
@@ -34,6 +32,9 @@ const AdminPanel = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingQuestion, setEditingQuestion] = useState<{ id: string; text: string } | null>(null);
   const [newDetail, setNewDetail] = useState('');
+
+  // Get categories from the config object
+  const categories = config.categories || [];
 
   useEffect(() => {
     setFormData(config);
@@ -48,7 +49,8 @@ const AdminPanel = () => {
   ];
 
   const handleSave = async () => {
-    // Use formData which holds the local state of the form
+    // Now, when we save, the config object in the store (which was updated by category actions)
+    // has been synced to formData by the useEffect. So we save the complete, updated config.
     await updateAndSaveConfig(formData); 
     alert('¡Configuración guardada con éxito!');
   };
@@ -97,6 +99,7 @@ const AdminPanel = () => {
   };
 
   const handleSaveCategory = (categoryToSave: Category) => {
+    // These actions now update the config object in the store
     if (categoryToSave.id.startsWith('manual-cat-')) {
       const newId = `cat-${categoryToSave.name.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}`;
       addCategory({ ...categoryToSave, id: newId });

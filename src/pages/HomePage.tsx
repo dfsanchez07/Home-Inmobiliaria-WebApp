@@ -11,116 +11,117 @@ import { ChatWidget } from '../components/Layout/ChatWidget';
 export const HomePage: React.FC = () => {
   const { 
     config, 
-    categories, 
     setCategories, 
     setLoading, 
     setError,
-    requestVisit,
     openPropertyModal,
     setCategoryProperties
   } = useAppStore();
 
+  // Correctly get categories from the config object
+  const { categories } = config;
+
   useEffect(() => {
-    const loadInitialData = async () => {
+    const loadPropertiesForCategories = async () => {
+      // The store ensures `categories` is always an array, so we can safely use it.
       if (!config.nocodbUrl || !config.nocodbApiKey || !config.nocodbTable) {
         // Set mock data for demonstration when no database is configured
-        const mockCategories = [
-          {
-            id: 'casas-venta',
-            name: 'Casas en Venta',
-            color: '#3b82f6',
-            properties: [
-              {
-                id: '1',
-                title: 'Casa Moderna en Zona Norte',
-                location: 'Popayán, Norte, Villa del Viento',
-                bedrooms: 3,
-                bathrooms: 2,
-                price: 450000000,
-                mainImage: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=800',
-                images: [
-                  'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=800',
-                  'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800'
-                ],
-                description: 'Hermosa casa moderna con acabados de lujo, ubicada en una de las mejores zonas de la ciudad.',
-                details: { 'Área': '180m²', 'Tipo': 'Casa', 'Modalidad': 'Venta', 'Parqueadero': 'Sí', 'Jardín': 'Sí', 'Habitaciones': 3, 'Baños': 2 }
-              },
-              {
-                id: '2',
-                title: 'Casa Familiar en El Centro',
-                location: 'Popayán, Centro, Barrio Colonial',
-                bedrooms: 4,
-                bathrooms: 3,
-                price: 380000000,
-                mainImage: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800',
-                images: [
-                  'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800',
-                  'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=800'
-                ],
-                description: 'Casa tradicional con amplios espacios, perfecta para familias grandes.',
-                details: { 'Área': '220m²', 'Tipo': 'Casa', 'Modalidad': 'Venta', 'Parqueadero': 'Sí', 'Patio': 'Sí', 'Habitaciones': 4, 'Baños': 3 }
-              }
-            ]
-          },
-          {
-            id: 'apartamentos-arriendo',
-            name: 'Apartamentos en Arriendo',
-            color: '#10b981',
-            properties: [
-              {
-                id: '3',
-                title: 'Apartamento Moderno Torre Central',
-                location: 'Popayán, Centro, Torre Empresarial',
-                bedrooms: 2,
-                bathrooms: 2,
-                price: 1200000,
-                mainImage: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800',
-                images: ['https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800'],
-                description: 'Apartamento moderno con excelente ubicación y todas las comodidades.',
-                details: { 'Área': '85m²', 'Tipo': 'Apartamento', 'Modalidad': 'Arriendo', 'Piso': '8', 'Ascensor': 'Sí', 'Habitaciones': 2, 'Baños': 2 }
-              }
-            ]
-          }
-        ];
-        setCategories(mockCategories);
+        if (categories && categories.length === 0) {
+          const mockCategories = [
+            {
+              id: 'casas-venta',
+              name: 'Casas en Venta',
+              color: '#3b82f6',
+              properties: [
+                {
+                  id: '1',
+                  title: 'Casa Moderna en Zona Norte',
+                  location: 'Popayán, Norte, Villa del Viento',
+                  bedrooms: 3,
+                  bathrooms: 2,
+                  price: 450000000,
+                  mainImage: 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=800',
+                  images: [
+                    'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=800',
+                    'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800'
+                  ],
+                  description: 'Hermosa casa moderna con acabados de lujo, ubicada en una de las mejores zonas de la ciudad.',
+                  details: { 'Área': '180m²', 'Tipo': 'Casa', 'Modalidad': 'Venta', 'Parqueadero': 'Sí', 'Jardín': 'Sí', 'Habitaciones': 3, 'Baños': 2 }
+                },
+                {
+                  id: '2',
+                  title: 'Casa Familiar en El Centro',
+                  location: 'Popayán, Centro, Barrio Colonial',
+                  bedrooms: 4,
+                  bathrooms: 3,
+                  price: 380000000,
+                  mainImage: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800',
+                  images: [
+                    'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800',
+                    'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=800'
+                  ],
+                  description: 'Casa tradicional con amplios espacios, perfecta para familias grandes.',
+                  details: { 'Área': '220m²', 'Tipo': 'Casa', 'Modalidad': 'Venta', 'Parqueadero': 'Sí', 'Patio': 'Sí', 'Habitaciones': 4, 'Baños': 3 }
+                }
+              ]
+            },
+            {
+              id: 'apartamentos-arriendo',
+              name: 'Apartamentos en Arriendo',
+              color: '#10b981',
+              properties: [
+                {
+                  id: '3',
+                  title: 'Apartamento Moderno Torre Central',
+                  location: 'Popayán, Centro, Torre Empresarial',
+                  bedrooms: 2,
+                  bathrooms: 2,
+                  price: 1200000,
+                  mainImage: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800',
+                  images: ['https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800'],
+                  description: 'Apartamento moderno con excelente ubicación y todas las comodidades.',
+                  details: { 'Área': '85m²', 'Tipo': 'Apartamento', 'Modalidad': 'Arriendo', 'Piso': '8', 'Ascensor': 'Sí', 'Habitaciones': 2, 'Baños': 2 }
+                }
+              ]
+            }
+          ];
+          setCategories(mockCategories);
+        }
         return;
       }
 
-      setLoading(true);
-      try {
-        const storedCategories = useAppStore.getState().categories;
-        if (storedCategories.length === 0) {
+      const categoriesToFetch = (categories || []).filter(c => !c.properties || c.properties.length === 0);
+
+      if (categoriesToFetch.length > 0) {
+        setLoading(true);
+        try {
+          await Promise.all(categoriesToFetch.map(async (category) => {
+            try {
+              const properties = await ApiService.fetchPropertiesByCategory(
+                config.nocodbUrl,
+                config.nocodbApiKey,
+                config.nocodbDatabase,
+                config.nocodbTable,
+                category.name
+              );
+              setCategoryProperties(category.id, properties);
+            } catch (error) {
+              console.error(`Error loading properties for category ${category.name}:`, error);
+              setCategoryProperties(category.id, []);
+            }
+          }));
+          setError(null);
+        } catch (error) {
+          console.error('Error loading properties:', error);
+          setError('Error al cargar las propiedades');
+        } finally {
           setLoading(false);
-          return;
         }
-
-        await Promise.all(storedCategories.map(async (category) => {
-          try {
-            const properties = await ApiService.fetchPropertiesByCategory(
-              config.nocodbUrl,
-              config.nocodbApiKey,
-              config.nocodbDatabase,
-              config.nocodbTable,
-              category.name
-            );
-            setCategoryProperties(category.id, properties);
-          } catch (error) {
-            console.error(`Error loading properties for category ${category.name}:`, error);
-            setCategoryProperties(category.id, []);
-          }
-        }));
-
-        setError(null);
-      } catch (error) {
-        console.error('Error loading properties:', error);
-        setError('Error al cargar las propiedades');
-      } finally {
-        setLoading(false);
       }
     };
 
-    loadInitialData();
-  }, [config.nocodbUrl, config.nocodbApiKey, config.nocodbTable, setCategories, setError, setLoading, setCategoryProperties]);
+    loadPropertiesForCategories();
+  }, [config.nocodbUrl, config.nocodbApiKey, config.nocodbTable, categories, setCategories, setError, setLoading, setCategoryProperties]);
 
   const safeCategories = Array.isArray(categories) ? categories : [];
 
@@ -139,7 +140,6 @@ export const HomePage: React.FC = () => {
               key={category.id}
               title={category.name}
               properties={category.properties}
-              onScheduleVisit={requestVisit}
               onCardClick={openPropertyModal}
             />
           ))}
